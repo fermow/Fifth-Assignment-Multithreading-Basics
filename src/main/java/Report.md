@@ -44,6 +44,22 @@ These threads can be set as daemon threads, so that when the working hours end (
 
 This way, background tasks are tied to the lifecycle of the main application, and unnecessary operations are avoided once the core program ends.
 ***
+Qes3
+***
+Our output is as if we created a class MyRunnable that has a method where we override run,
+and by calling start(), it’s exactly as if we created a thread that executes the run method.
+***
+This symbol is called a Lambda Expression.
+Lambda expressions provide a shorter and more readable way to write code for methods that only have one implementation—like when you define a Runnable.
+The -> symbol represents Lambda, which allows us to write simple functions in a more compact way.
+This code demonstrates how to launch a simple thread using a Lambda expression.
+***
+A nameless function that takes no arguments (())
+and performs this action. 
+How to create a new Thread?
+Using Thread and a Runnable.
+How to make the code more concise and readable with Lambda (->)?
+Especially when the implementation only has one method.
 
 
 
