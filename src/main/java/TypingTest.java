@@ -10,32 +10,34 @@ import java.util.Scanner;
 public class TypingTest {
 
     private static String lastInput = "";
-    private static Scanner scanner = new Scanner(System.in);
-    public static class InputRunnable implements Runnable {
-        Thread thread_1 = new Thread();
-
-        //TODO: Implement a thread to get user input without blocking the main thread
-        @Override
-        public void run() {
-
-        }
-    }
-
+    private static Scanner scanner;
+    private static int counter = 0;
 
     public static void testWord(String wordToTest) {
         try {
-            System.out.println(wordToTest);
-            lastInput = "";
 
-            // TODO
+            Thread thread_1 = new Thread(()-> {
+                scanner = new Scanner(System.in);
+                System.out.println("The word is: " + wordToTest);
+                System.out.println("Type it!!");
+                lastInput = scanner.nextLine();
+                System.out.println("You typed: " + lastInput);
+                if (lastInput.equals(wordToTest)) {
+                    System.out.println("Correct");
+                    counter++;
+                } else {
+                    System.out.println("Incorrect");
+                }
 
-            System.out.println();
-            System.out.println("You typed: " + lastInput);
-            if (lastInput.equals(wordToTest)) {
-                System.out.println("Correct");
-            } else {
-                System.out.println("Incorrect");
+            });
+
+            thread_1.start();
+            Thread.sleep( 5000);
+            if (thread_1.isAlive()) {
+                thread_1.interrupt();
             }
+
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,8 +51,9 @@ public class TypingTest {
             testWord(wordToTest);
             Thread.sleep(2000); // Pause briefly before showing the next word
         }
+        System.out.println("Your correct answered: " + counter);
+        System.out.println("Your incorrect answered: " + (5-counter));
 
-        // TODO: Display a summary of test results
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -61,31 +64,26 @@ public class TypingTest {
         words.add("boredom");
         words.add("is a");
         words.add("crime");
-        try(BufferedReader reader = new BufferedReader(new FileReader("src\\main\\resources\\Words.txt"))){
-            String line ;
+        try (BufferedReader reader = new BufferedReader(new FileReader("src\\main\\resources\\Words.txt"))) {
+            String line;
             Random random = new Random();
 
 
-            for (int i = 0 ; (line = reader.readLine()) != null && i < 100; i++){
+            for (int i = 0; (line = reader.readLine()) != null && i < 100; i++) {
                 allWords.add(line);
             }
 
-            for(int i = 0 ; i < 5 ; i++){
+            for (int i = 0; i < 5; i++) {
                 words.set(i, allWords.get(random.nextInt(100)));
 
             }
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             System.out.println("file not found!");
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
+        typingTest(words);
 
-        // TODO: Replace the hardcoded word list with words read from the given file in the resources folder (Words.txt)
-       // typingTest(words);
-
-        //System.out.println("Press enter to exit.");
     }
 }
