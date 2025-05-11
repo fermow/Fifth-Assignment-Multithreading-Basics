@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 public class ReportGenerator {
@@ -72,6 +75,18 @@ public class ReportGenerator {
 
     public static void loadProducts() throws IOException {
         // TODO:
+        try (BufferedReader reader = new BufferedReader(new FileReader("src\\main\\resources\\Products.txt"))){
+            String line = "";
+            for (int i = 0 ;(line = reader.readLine()) != null && i < 9 ; i++){
+                String[] parts = line.split(",");
+                int id = Integer.parseInt(parts[0]);
+                Double price = Double.parseDouble(parts[2]);
+                Product product = new Product(id,parts[1],price);
+                productCatalog[i] = product;
+
+            }
+
+        }
         // - Read lines from Products.txt
         // - For each line, parse product ID, name, and price
         // - The format of the file is like this:
@@ -86,4 +101,5 @@ public class ReportGenerator {
         // - Wait for all threads to finish
         // - After all threads are done, call makeReport() on each TaskRunnable
     }
+
 }
