@@ -2,10 +2,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ReportGenerator {
     static class TaskRunnable implements Runnable {
-        private final String path;
+        private String path ;
         private double totalCost;
         private int totalAmount;
         private int totalDiscountSum;
@@ -25,7 +26,43 @@ public class ReportGenerator {
 
         @Override
         public void run() {
-            //TODO:
+            try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    int productId = Integer.parseInt(parts[0]);
+                    int amount = Integer.parseInt(parts[1]);
+                    int discount = Integer.parseInt(parts[2]);
+                    Product matchedProduct = null;
+                   // System.out.println(productCatalog[0].getProductID());
+                        for(Product p : productCatalog){
+                            if(p != null && p.getProductID() == productId){
+                                matchedProduct = p;
+                                double costAfterDiscount = (matchedProduct.getPrice() * amount) - discount;
+                                totalLines++;
+                                totalAmount += amount;
+                                totalDiscountSum += discount;
+                                totalCost += costAfterDiscount;
+                                if (costAfterDiscount > highestCostAfterDiscount) {
+                                    highestCostAfterDiscount = costAfterDiscount;
+                                    mostExpensiveProduct = matchedProduct;
+                                }
+                            }
+
+
+                    }
+                }
+            }
+            catch (FileNotFoundException e){
+                System.out.println("file not found!");
+            }
+            catch (IOException e){
+                e.printStackTrace();
+
+        }
+
+
             // - Read all lines from the input file (path)
             // - For each line, parse product ID, amount, and discount
             // - The format of the files are like this:
@@ -37,6 +74,9 @@ public class ReportGenerator {
 
         public void makeReport() {
             // TODO:
+            System.out.println(totalAmount);
+            System.out.println(totalCost);
+            System.out.println(totalDiscountSum);
             // - Print the filename
             // - Print total cost and total items bought
             // - Calculate and print average discount
@@ -45,7 +85,7 @@ public class ReportGenerator {
     }
 
     static class Product {
-        private int productID;
+        private static int productID;
         private String productName;
         private double price;
 
@@ -68,6 +108,11 @@ public class ReportGenerator {
         }
     }
     private static final String[] ORDER_FILES = {
+            "src\\main\\resources\\2021_order_details.txt",
+            "src\\main\\resources\\2022_order_details.txt",
+            "src\\main\\resources\\2023_order_details.txt",
+            "src\\main\\resources\\2024_order_details.txt"
+
             // TODO: Define the paths to the order detail text files in the resources folder
     };
 
@@ -94,12 +139,30 @@ public class ReportGenerator {
         // - Store Product objects in the productCatalog array
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         // TODO:
         // - Create one TaskRunnable and Thread for each order file
         // - Start all threads
         // - Wait for all threads to finish
         // - After all threads are done, call makeReport() on each TaskRunnable
+        loadProducts();
+        TaskRunnable[] tasks = new TaskRunnable[ORDER_FILES.length];
+        Thread[] threads = new Thread[ORDER_FILES.length];
+
+        for (int i = 0; i < ORDER_FILES.length; i++) {
+            tasks[i] = new TaskRunnable(ORDER_FILES[i]);
+            threads[i] = new Thread(tasks[i]);
+            threads[i].start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
+        for (TaskRunnable task : tasks) {
+            task.makeReport();
+            System.out.println("*******************");
+        }
+
     }
 
 }
