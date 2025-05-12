@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class ReportGenerator {
     static class TaskRunnable implements Runnable {
         private String path ;
-        private double totalCost;
+        private long totalCost;
         private int totalAmount;
         private int totalDiscountSum;
         private int totalLines;
@@ -32,8 +32,8 @@ public class ReportGenerator {
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     int productId = Integer.parseInt(parts[0]);
-                    int amount = Integer.parseInt(parts[1]);
-                    int discount = Integer.parseInt(parts[2]);
+                    double amount = Integer.parseInt(parts[1]);
+                    double discount = Integer.parseInt(parts[2]);
                     Product matchedProduct = null;
                    // System.out.println(productCatalog[0].getProductID());
                         for(Product p : productCatalog){
@@ -72,11 +72,16 @@ public class ReportGenerator {
             // - Track the most expensive purchase after discount
         }
 
-        public void makeReport() {
+        public void makeReport(String fileName) {
             // TODO:
-            System.out.println(totalAmount);
-            System.out.println(totalCost);
-            System.out.println(totalDiscountSum);
+            System.out.println(fileName);
+
+            System.out.println("Total items bought: " + totalLines);
+            System.out.println("Total cost: " + totalCost);
+            System.out.println("Total Amount: " + totalAmount);
+            System.out.println("Average discount: " + totalDiscountSum/totalLines);
+            System.out.println("Most expensive purchase after discount: " + totalCost);
+
             // - Print the filename
             // - Print total cost and total items bought
             // - Calculate and print average discount
@@ -155,14 +160,32 @@ public class ReportGenerator {
             threads[i].start();
         }
 
-        for (Thread thread : threads) {
+        for (Thread thread : threads){
             thread.join();
         }
-        for (TaskRunnable task : tasks) {
-            task.makeReport();
-            System.out.println("*******************");
+        for (int i = 0 ; i < 4 ; i++){
+            String fileName = "";
+            switch (i){
+                case 0 :
+                    fileName = "2021_order_details.txt";
+                    break;
+                case 1 :
+                    fileName = "2022_order_details.txt";
+                    break;
+                case 2 :
+                    fileName = "2023_order_details.txt";
+                    break;
+                case 3 :
+                    fileName = "2024_order_details.txt";
+                    break;
+                default:
+                    break;
+            }
+            tasks[i].makeReport(fileName);
+            System.out.println("* * * * * * * * * * * * * * * * * * *");
         }
 
     }
+
 
 }
